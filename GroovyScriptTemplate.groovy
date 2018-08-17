@@ -62,6 +62,9 @@ myRestCall()
 step('Exception Handling')
 myExceptionTest()
 
+step('Method Missing')
+giveMeIceCream()
+
 step('END')
 
 
@@ -152,14 +155,14 @@ def myLoopTest() {
 // play with a list
 def myListTest() {
 	// create list (create empty with [])
-	myArray = ['fooArray1']
+	myList = ['fooArray1']
 	
 	// append to list
-	myArray << 'fooArray2'
+	myList << 'fooArray2'
 	
 	// loop over list
-	myArray.each { it ->
-		log.debug("${it}")
+	myList.each { item ->
+		log.debug("${item}")
 	}
 }
 
@@ -193,4 +196,14 @@ def myExceptionTest() {
 def myRestCall() {
 	responseString = Request.Get('https://reqres.in/api/unknown/2').execute().returnContent().asString();
 	log.debug(responseString)
+}
+
+// when trying to call an undefined method, the below method will handle this (metaprogramming; see also: propertyMissing)
+def methodMissing(String name, args) {
+	if (name.startsWith('giveMe')) {
+		what = name.replace('giveMe', '')
+		log.info("here is your ${what}")
+	} else {
+		throw new MissingMethodException(name, this.class, args)
+	}
 }
