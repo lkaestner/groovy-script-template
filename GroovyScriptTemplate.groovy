@@ -62,8 +62,11 @@ myRestCall()
 step('Exception Handling')
 myExceptionTest()
 
-step('Method Missing')
-giveMeIceCream()
+step('Undefined Method')
+giveMeIceCream() // this method is not defined, so methodMissing is called
+
+step('Undefined Property')
+log.info(freddyDuck) // freddyDuck is not defined, so propertyMissing is called
 
 step('END')
 
@@ -198,12 +201,21 @@ def myRestCall() {
 	log.debug(responseString)
 }
 
-// when trying to call an undefined method, the below method will handle this (metaprogramming; see also: propertyMissing)
+// when trying to call an undefined method, the below method will handle this (metaprogramming)
 def methodMissing(String name, args) {
 	if (name.startsWith('giveMe')) {
 		what = name.replace('giveMe', '')
 		log.info("here is your ${what}")
 	} else {
 		throw new MissingMethodException(name, this.class, args)
+	}
+}
+
+// when trying to use an undefined property, the below method will handle this (metaprogramming)
+def propertyMissing(String name) {
+	if (name.contains('Duck')) {
+		return name.replace('Duck', '')
+	} else {
+		throw new MissingPropertyException(name, this.class)
 	}
 }
